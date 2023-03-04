@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class MinesweeperApp extends Application {
 
@@ -54,6 +55,7 @@ public class MinesweeperApp extends Application {
     public void setSuperBomb(boolean superBomb) {
         this.superBomb = superBomb;
     }
+
     @Override
     public void start(Stage stage) throws IOException {
 //        FXMLLoader fxmlLoader = new FXMLLoader(MinesweeperApp.class.getResource("hello-view.fxml"));
@@ -61,12 +63,9 @@ public class MinesweeperApp extends Application {
 //        createScenarioController.onCreateButtonClick(2, 1, 11, 120, 0);
         LoadScenarioController loadScenarioController = new LoadScenarioController(this);
         loadScenarioController.onLoadButtonClick(1);
-        System.out.println(getDifficulty() + " " + getGridSize() + " " + getBombs() + " " + getTime());
-        if (isSuperBomb()) {
-            System.out.println(1);
-        } else {
-            System.out.println(0);
-        }
+        MainGame mainGame = new MainGame(this);
+        InitializeGame initializeGame = new InitializeGame(mainGame);
+        initializeGame.init();
 //        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
 //        stage.setTitle("Hello!");
 //        stage.setScene(scene);
