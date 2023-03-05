@@ -1,6 +1,7 @@
 package com.example.minesweeperntua;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 
 import java.io.*;
@@ -120,9 +121,19 @@ public class LoadScenarioController {
             minesweeperApp.setBombs(bombs);
             minesweeperApp.setTime(time);
             minesweeperApp.setSuperBomb(superBomb != 0);
+            minesweeperApp.setLoadedScenario(true);
 
-        } catch (IOException | InvalidValueException | InvalidDescriptionException e) {
+        } catch (InvalidValueException | InvalidDescriptionException e) {
             e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            // Show an error message to the user
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Scenario not found");
+            alert.setContentText("The scenario with ID " + scenarioID + " was not found.");
+            alert.showAndWait();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

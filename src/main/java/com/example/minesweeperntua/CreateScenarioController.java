@@ -1,5 +1,7 @@
 package com.example.minesweeperntua;
 
+import javafx.scene.control.Alert;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -25,6 +27,13 @@ public class CreateScenarioController {
             writer.write(time + "\n");
             writer.write(superBomb + "\n");
             writer.close();
+        } catch (FileAlreadyExistsException e) {
+            // Show an error message to the user
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("File already exists");
+            alert.setContentText("The scenario with ID " + scenarioID + " already exists.");
+            alert.showAndWait();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
