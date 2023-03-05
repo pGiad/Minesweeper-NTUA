@@ -15,6 +15,8 @@ public class MinesweeperApp extends Application {
     private int bombs;
     private int time;
     private boolean superBomb;
+    private boolean loadedScenario = false;
+    private Stage primaryStage;
 
     public int getDifficulty() {
         return difficulty;
@@ -56,20 +58,55 @@ public class MinesweeperApp extends Application {
         this.superBomb = superBomb;
     }
 
+    public boolean isLoadedScenario() {
+        return loadedScenario;
+    }
+
+    public void setLoadedScenario(boolean loadedScenario) {
+        this.loadedScenario = loadedScenario;
+    }
+
+    public Stage getPrimaryStage() {
+        return primaryStage;
+    }
+
+    public void setPrimaryStage(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+    }
+
     @Override
     public void start(Stage stage) throws IOException {
 //        FXMLLoader fxmlLoader = new FXMLLoader(MinesweeperApp.class.getResource("hello-view.fxml"));
-//        CreateScenarioController createScenarioController = new CreateScenarioController(this);
-//        createScenarioController.onCreateButtonClick(2, 1, 11, 120, 0);
-        LoadScenarioController loadScenarioController = new LoadScenarioController(this);
-        loadScenarioController.onLoadButtonClick(1);
-        MainGame mainGame = new MainGame(this);
-        InitializeGame initializeGame = new InitializeGame(mainGame);
-        initializeGame.init();
+        this.primaryStage = stage;
+        primaryStage.setTitle("MediaLab Minesweeper");
+        MainMenu mainMenu = new MainMenu(this);
+        mainMenu.mainMenuContent(primaryStage);
+//        MainGame mainGame = new MainGame(this);
+//        InitializeGame initializeGame = new InitializeGame(mainGame);
+//        initializeGame.init();
+//        System.out.println(mainGame.getBombNeighbors(mainGame.getNeighbors(mainGame.getTiles()[0][0], 2)));
 //        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
 //        stage.setTitle("Hello!");
 //        stage.setScene(scene);
 //        stage.show();
+    }
+
+    public void loadScenario(int scenarioID) {
+        LoadScenarioController loadScenarioController = new LoadScenarioController(this);
+        loadScenarioController.onLoadButtonClick(scenarioID);
+    }
+
+    public void createScenario(int scenarioID, int difficulty, int bombs, int time, int superBomb) {
+        CreateScenarioController createScenarioController = new CreateScenarioController(this);
+        createScenarioController.onCreateButtonClick(scenarioID, difficulty, bombs, time, superBomb);
+    }
+
+    public void startGame() {
+        MainGame mainGame = new MainGame(this);
+        InitializeGame initializeGame = new InitializeGame(mainGame);
+        initializeGame.init();
+        GameUI gameUI = new GameUI(mainGame, primaryStage);
+        gameUI.createBoard();
     }
 
     public static void main(String[] args) {

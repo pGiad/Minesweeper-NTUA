@@ -11,19 +11,10 @@ public class MainGame {
     private int numOfOpenedTiles = 0;
     private int usedFlags = 0;
     private int tries = 0;
-    private Timer timer;
 
     public MainGame(MinesweeperApp minesweeperApp) {
         this.minesweeperApp = minesweeperApp;
         this.tiles = new Tile[getMinesweeperApp().getGridSize()][getMinesweeperApp().getGridSize()];
-        this.timer = new Timer();
-        this.timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                System.out.println("You lost the game - timer ran out");
-                // Game over - do what you need to do to end the game
-            }
-        }, minesweeperApp.getTime() * 1000L);
     }
 
     public MinesweeperApp getMinesweeperApp() {
@@ -113,6 +104,10 @@ public class MainGame {
         }
 
         tile.setOpen(true);
+        if (tile.isFlag()) {
+            tile.setFlag(false);
+            usedFlags--;
+        }
 //        text.setVisible(true);
 //        border.setFill(null);
 //        print the number of neighbors using getBombNeighbors
@@ -135,7 +130,7 @@ public class MainGame {
     }
 
     public void flag(Tile tile) {
-        if (tile.isOpen() || usedFlags == minesweeperApp.getBombs()) {
+        if (tile.isOpen() || (usedFlags == minesweeperApp.getBombs() && !tile.isFlag())) {
             return;
         }
 
