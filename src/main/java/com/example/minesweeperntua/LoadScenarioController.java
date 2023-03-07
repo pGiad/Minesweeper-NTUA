@@ -112,6 +112,7 @@ public class LoadScenarioController {
             br.close();
             fis.close();
 
+            minesweeperApp.setScenarioID(scenarioID);
             minesweeperApp.setDifficulty(difficulty);
             if (difficulty == 1) {
                 minesweeperApp.setGridSize(9);
@@ -123,8 +124,6 @@ public class LoadScenarioController {
             minesweeperApp.setSuperBomb(superBomb != 0);
             minesweeperApp.setLoadedScenario(true);
 
-        } catch (InvalidValueException | InvalidDescriptionException e) {
-            e.printStackTrace();
         } catch (FileNotFoundException e) {
             // Show an error message to the user
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -132,8 +131,8 @@ public class LoadScenarioController {
             alert.setHeaderText("Scenario not found");
             alert.setContentText("The scenario with ID " + scenarioID + " was not found.");
             alert.showAndWait();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (InvalidValueException | InvalidDescriptionException | IOException e) {
+            e.printStackTrace();
         }
     }
 }

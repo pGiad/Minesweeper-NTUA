@@ -35,7 +35,7 @@ public class CreateScenarioController {
             alert.setContentText("The scenario with ID " + scenarioID + " already exists.");
             alert.showAndWait();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 }
