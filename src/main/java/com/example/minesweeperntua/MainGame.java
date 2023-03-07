@@ -1,9 +1,9 @@
 package com.example.minesweeperntua;
 
+import java.io.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class MainGame {
     private final MinesweeperApp minesweeperApp;
@@ -11,9 +11,11 @@ public class MainGame {
     private int numOfOpenedTiles = 0;
     private int usedFlags = 0;
     private int tries = 0;
+    private boolean gameFinished = false;
 
     public MainGame(MinesweeperApp minesweeperApp) {
         this.minesweeperApp = minesweeperApp;
+        minesweeperApp.setLoadedScenario(false);
         this.tiles = new Tile[getMinesweeperApp().getGridSize()][getMinesweeperApp().getGridSize()];
     }
 
@@ -43,6 +45,22 @@ public class MainGame {
 
     public void setUsedFlags(int usedFlags) {
         this.usedFlags = usedFlags;
+    }
+
+    public int getTries() {
+        return tries;
+    }
+
+    public boolean isGameFinished() {
+        return gameFinished;
+    }
+
+    public void setGameFinished(boolean gameFinished) {
+        this.gameFinished = gameFinished;
+    }
+
+    public void setTries(int tries) {
+        this.tries = tries;
     }
 
     public int getBombNeighbors(List<Tile> neighbors) {
@@ -97,9 +115,10 @@ public class MainGame {
         }
 
         if (tile.isBomb()) {
-//            app.getScene().setRoot(GameOverUI.gameOverContent(app));
-//            game lost...
-            System.out.println("You lost the game");
+            updateRounds(minesweeperApp.getBombs(), tries, minesweeperApp.getTime(), false);
+            gameFinished = true;
+            GameOverUI gameOverUI = new GameOverUI(this);
+            gameOverUI.gameOver();
             return;
         }
 
@@ -108,24 +127,23 @@ public class MainGame {
             tile.setFlag(false);
             usedFlags--;
         }
-//        text.setVisible(true);
-//        border.setFill(null);
-//        print the number of neighbors using getBombNeighbors
+
         this.numOfOpenedTiles++;
 
         List<Tile> neighbors = getNeighbors(tile, minesweeperApp.getDifficulty());
-        for (Tile neighbor : neighbors) {
-            if (!neighbor.isBomb())
-                open(neighbor);
+        if (getBombNeighbors(neighbors) == 0) {
+            for (Tile neighbor : neighbors) {
+                if (!neighbor.isBomb())
+                    open(neighbor);
+            }
         }
-
-        this.tries++;
 
         if (numOfOpenedTiles == minesweeperApp.getGridSize() * minesweeperApp.getGridSize()
                 - minesweeperApp.getBombs()) {
-//            app.getScene().setRoot(WinUI.winContent(app));
-//            game won
-            System.out.println("You won the game");
+            updateRounds(minesweeperApp.getBombs(), tries, minesweeperApp.getTime(), true);
+            gameFinished = true;
+            WinUI winUI = new WinUI(this);
+            winUI.win();
         }
     }
 
@@ -138,25 +156,29 @@ public class MainGame {
             for (int i = 0; i < 16; i++) {
                 tiles[tile.getX()][i].setOpen(true);
                 tiles[i][tile.getY()].setOpen(true);
+                if (tiles[tile.getX()][i].isFlag()) {
+                    tiles[tile.getX()][i].setFlag(false);
+                    usedFlags--;
+                }
+                if (tiles[i][tile.getY()].isFlag()) {
+                    tiles[i][tile.getY()].setFlag(false);
+                    usedFlags--;
+                }
                 if (!tiles[tile.getX()][i].isBomb()) {
                     this.numOfOpenedTiles++;
-                    // show tile as expected
-                } else {
-                    // show bomb tile
                 }
                 if (!tiles[i][tile.getY()].isBomb()) {
                     this.numOfOpenedTiles++;
-                    // show tile as expected
-                } else {
-                    // show bomb tile
                 }
             }
             if (numOfOpenedTiles == minesweeperApp.getGridSize() * minesweeperApp.getGridSize()
                     - minesweeperApp.getBombs()) {
-//            app.getScene().setRoot(WinUI.winContent(app));
-//            game won
-                System.out.println("You won the game");
+                updateRounds(minesweeperApp.getBombs(), tries, minesweeperApp.getTime(), true);
+                gameFinished = true;
+                WinUI winUI = new WinUI(this);
+                winUI.win();
             }
+            return;
         }
 
         if (tile.isFlag()) {
@@ -165,6 +187,50 @@ public class MainGame {
         } else {
             tile.setFlag(true);
             usedFlags++;
+        }
+    }
+
+    public void updateRounds(int bombs, int tries, int time, boolean userWon) {
+        try {
+            String filename = "medialab/rounds.txt";
+            File file = new File(filename);
+
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            FileReader fileReader = new FileReader(file);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+            LinkedList<String> lines = new LinkedList<>();
+
+            String round;
+            while ((round = bufferedReader.readLine()) != null) {
+                lines.add(round);
+            }
+
+            bufferedReader.close();
+            fileReader.close();
+
+            if (lines.size() == 5) {
+                lines.removeLast();
+            }
+
+            lines.addFirst(bombs + "," + tries + "," + time + "," + userWon);
+
+            FileWriter fileWriter = new FileWriter(file);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+
+            for (String l : lines) {
+                bufferedWriter.write(l);
+                bufferedWriter.newLine();
+            }
+
+            bufferedWriter.close();
+            fileWriter.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

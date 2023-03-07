@@ -1,15 +1,13 @@
 package com.example.minesweeperntua;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 public class MinesweeperApp extends Application {
 
+    private int scenarioID;
     private int difficulty;
     private int gridSize;
     private int bombs;
@@ -17,6 +15,15 @@ public class MinesweeperApp extends Application {
     private boolean superBomb;
     private boolean loadedScenario = false;
     private Stage primaryStage;
+    private GameUI gameUI;
+
+    public int getScenarioID() {
+        return scenarioID;
+    }
+
+    public void setScenarioID(int scenarioID) {
+        this.scenarioID = scenarioID;
+    }
 
     public int getDifficulty() {
         return difficulty;
@@ -74,21 +81,24 @@ public class MinesweeperApp extends Application {
         this.primaryStage = primaryStage;
     }
 
+    public GameUI getGameUI() {
+        return gameUI;
+    }
+
+    public void setGameUI(GameUI gameUI) {
+        this.gameUI = gameUI;
+    }
+
     @Override
     public void start(Stage stage) throws IOException {
-//        FXMLLoader fxmlLoader = new FXMLLoader(MinesweeperApp.class.getResource("hello-view.fxml"));
         this.primaryStage = stage;
         primaryStage.setTitle("MediaLab Minesweeper");
+        mainMenu();
+    }
+
+    public void mainMenu() {
         MainMenu mainMenu = new MainMenu(this);
         mainMenu.mainMenuContent(primaryStage);
-//        MainGame mainGame = new MainGame(this);
-//        InitializeGame initializeGame = new InitializeGame(mainGame);
-//        initializeGame.init();
-//        System.out.println(mainGame.getBombNeighbors(mainGame.getNeighbors(mainGame.getTiles()[0][0], 2)));
-//        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
-//        stage.setTitle("Hello!");
-//        stage.setScene(scene);
-//        stage.show();
     }
 
     public void loadScenario(int scenarioID) {
@@ -107,6 +117,7 @@ public class MinesweeperApp extends Application {
         initializeGame.init();
         GameUI gameUI = new GameUI(mainGame, primaryStage);
         gameUI.createBoard();
+        setGameUI(gameUI);
     }
 
     public static void main(String[] args) {
