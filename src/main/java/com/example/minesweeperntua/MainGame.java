@@ -56,7 +56,8 @@ public class MainGame {
     }
 
     /**
-     * Returns the number of flags used in the game.
+     * Returns the number of flags used in the game. The number of used flags can't be greater than the number of mines
+     * in the game.
      *
      * @return the number of flags used
      */
@@ -65,7 +66,11 @@ public class MainGame {
     }
 
     /**
-     * Sets the number of flags used in the game.
+     * Sets the number of flags used in the game. Each time the user right-clicks on a tile which is not opened and
+     * flagged it becomes flagged and the number of usedFlags is increased by one. If the tile is not opened, but it's
+     * flagged and the user right-clicks on it then the flag is removed and the number of usedFlags is decreased by one.
+     * If the number of used flags is equal to the number of mines in the game then we can use no more flags and the
+     * used flags won't increase.
      *
      * @param usedFlags the number of flags used
      */
@@ -74,9 +79,9 @@ public class MainGame {
     }
 
     /**
-     * Returns the number of tries made (each successful left click is a try).
+     * Returns the number of tries made. Each successful left click that opens a tile is considered a try.
      *
-     * @return the number of tries made
+     * @return the number of tries made in the game
      */
     public int getTries() {
         return tries;
@@ -92,7 +97,9 @@ public class MainGame {
     }
 
     /**
-     * Returns whether the game is finished or not.
+     * Returns whether the game is finished or not. The game is finished if the user opened all tiles which are not a
+     * mine and in that case wins. If the user left-clicks on a mine or if the time is over then the game is over and
+     * the user loses the game.
      *
      * @return {@code true} if the game is finished, {@code false} otherwise
      */
@@ -112,7 +119,7 @@ public class MainGame {
     /**
      * Returns the number of mine neighbors for the given list of tiles.
      *
-     * @param neighbors the list of neighboring tiles
+     * @param neighbors the list of neighboring tiles which is calculated by the getNeighbors(Tile, int) method
      * @return the number of mine neighbors for the given list of tiles
      */
     public int getBombNeighbors(List<Tile> neighbors) {
@@ -127,10 +134,11 @@ public class MainGame {
     }
 
     /**
-     * Returns a list of neighboring tiles for the given tile and difficulty level.
+     * Returns a list of neighboring tiles for the given tile and difficulty level
      *
      * @param tile the tile to get neighbors for
-     * @param difficulty the difficulty level (1 for easy, 2 for medium)
+     * @param difficulty the difficulty level (1 for easy, 2 for medium). Necessary in order to have the size of the
+     *                   grid. The size of the grid could be a parameter instead of difficulty.
      * @return a list of neighboring tiles for the given tile and difficulty level
      */
     public List<Tile> getNeighbors(Tile tile, int difficulty) {
@@ -169,7 +177,9 @@ public class MainGame {
     }
 
     /**
-     * Opens the given tile.
+     * Opens the given tile. If the tile is a mine the game is over and user loses. If the tile that is opened is the
+     * last tile that is not a mine the game is over and user wins. If the tile has no mine neighbors then we
+     * recursively open the neighbor tiles.
      *
      * @param tile the tile to open
      */
