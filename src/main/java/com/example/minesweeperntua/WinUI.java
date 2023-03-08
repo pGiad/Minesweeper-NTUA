@@ -3,6 +3,8 @@ package com.example.minesweeperntua;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 public class WinUI {
     private final MainGame mainGame;
@@ -22,6 +24,11 @@ public class WinUI {
         ButtonType mainMenuButton = new ButtonType("Main Menu");
 
         alert.getButtonTypes().setAll(newGameButton, mainMenuButton);
+
+        ImageView imageView = new ImageView(new Image("win.png"));
+        imageView.setFitHeight(100);
+        imageView.setFitWidth(150);
+        alert.setGraphic(imageView);
 
         Platform.runLater(() -> {
             alert.showAndWait().ifPresent(buttonType -> {

@@ -1,6 +1,7 @@
 package com.example.minesweeperntua;
 
 import javafx.application.Application;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -93,6 +94,7 @@ public class MinesweeperApp extends Application {
     public void start(Stage stage) throws IOException {
         this.primaryStage = stage;
         primaryStage.setTitle("MediaLab Minesweeper");
+        primaryStage.getIcons().add(new Image("mine.jpg"));
         mainMenu();
     }
 

@@ -1,20 +1,23 @@
 package com.example.minesweeperntua;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class MainMenu {
     private final MinesweeperApp minesweeperApp;
@@ -26,29 +29,37 @@ public class MainMenu {
     public void mainMenuContent(Stage primaryStage) {
         VBox root = new VBox();
         root.setAlignment(Pos.CENTER);
-        root.setSpacing(20);
+        root.setSpacing(50);
 
         // Add title
         Label titleLabel = new Label("Minesweeper Game");
         titleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+        titleLabel.setStyle("-fx-text-fill: #700450");
         root.getChildren().add(titleLabel);
+
+        HBox primaryButtons = new HBox();
+        primaryButtons.setAlignment(Pos.CENTER);
+        primaryButtons.setSpacing(30);
 
         // Add Load button
         Button loadButton = new Button("Load Scenario");
+        loadButton.setStyle("-fx-background-color: #700450; -fx-text-fill: #FFFFFF; -fx-font-size: 15");
         loadButton.setOnAction(event -> {
             loadPopUp(primaryStage);
         });
-        root.getChildren().add(loadButton);
+        primaryButtons.getChildren().add(loadButton);
 
         // Add Create Scenario button
         Button createButton = new Button("Create Scenario");
+        createButton.setStyle("-fx-background-color: #700450; -fx-text-fill: #FFFFFF; -fx-font-size: 15");
         createButton.setOnAction(event -> {
             createPopUp(primaryStage);
         });
-        root.getChildren().add(createButton);
+        primaryButtons.getChildren().add(createButton);
 
         // Add Start Game button
         Button startGameButton = new Button("Start Game");
+        startGameButton.setStyle("-fx-background-color: #700450; -fx-text-fill: #FFFFFF; -fx-font-size: 15");
         startGameButton.setOnAction(event -> {
             if (minesweeperApp.isLoadedScenario()) {
                 minesweeperApp.startGame();
@@ -61,17 +72,34 @@ public class MainMenu {
                 alert.showAndWait();
             }
         });
-        root.getChildren().add(startGameButton);
+        primaryButtons.getChildren().add(startGameButton);
+
+        root.getChildren().add(primaryButtons);
+
+        HBox secondaryButtons = new HBox();
+        secondaryButtons.setAlignment(Pos.CENTER);
+        secondaryButtons.setSpacing(60);
+
+        // Add Rounds button
+        Button roundsButton = new Button("Rounds");
+        roundsButton.setStyle("-fx-background-color: #700450; -fx-text-fill: #FFFFFF; -fx-font-size: 15");
+        roundsButton.setOnAction(event -> {
+            roundsPopUp(primaryStage);
+        });
+        secondaryButtons.getChildren().add(roundsButton);
 
         // Add Exit button
         Button exitButton = new Button("Exit");
+        exitButton.setStyle("-fx-background-color: #700450; -fx-text-fill: #FFFFFF; -fx-font-size: 15");
         exitButton.setOnAction(event -> {
             primaryStage.close();
         });
-        root.getChildren().add(exitButton);
+        secondaryButtons.getChildren().add(exitButton);
+
+        root.getChildren().add(secondaryButtons);
 
         // Set scene and show primary window
-        Scene scene = new Scene(root, 400, 400);
+        Scene scene = new Scene(root, 600, 400);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -80,13 +108,16 @@ public class MainMenu {
         Stage popupStage = new Stage();
         popupStage.initOwner(stage);
         popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.setTitle("Load Scenario");
 
         VBox popupRoot = new VBox();
         popupRoot.setAlignment(Pos.CENTER);
-        popupRoot.setSpacing(10);
+        popupRoot.setSpacing(30);
 
         // Add title label
         Label titleLabel = new Label("Load Scenario");
+        titleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+        titleLabel.setStyle("-fx-text-fill: #700450");
         titleLabel.setAlignment(Pos.TOP_CENTER);
         popupRoot.getChildren().add(titleLabel);
 
@@ -112,10 +143,12 @@ public class MainMenu {
         ObservableList<Integer> options = FXCollections.observableArrayList(scenarioIds);
         ComboBox<Integer> idDropdown = new ComboBox<>(options);
         idDropdown.setPromptText("Select scenario ID");
+        idDropdown.setStyle("-fx-font-size: 14");
         popupRoot.getChildren().add(idDropdown);
 
         // Add "Load" button
         Button loadScenarioButton = new Button("Load");
+        loadScenarioButton.setStyle("-fx-background-color: #700450; -fx-text-fill: #FFFFFF; -fx-font-size: 14");
         loadScenarioButton.setOnAction(loadEvent -> {
             Integer scenarioId = idDropdown.getValue();
             if (scenarioId != null) {
@@ -133,7 +166,7 @@ public class MainMenu {
         popupRoot.getChildren().add(loadScenarioButton);
 
         // Set scene and show popup window
-        Scene popupScene = new Scene(popupRoot, 200, 100);
+        Scene popupScene = new Scene(popupRoot, 400, 200);
         popupStage.setScene(popupScene);
         popupStage.showAndWait();
     }
@@ -142,14 +175,17 @@ public class MainMenu {
         Stage popupStage = new Stage();
         popupStage.initOwner(stage);
         popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.setTitle("Create Scenario");
 
         VBox popupRoot = new VBox();
         popupRoot.setAlignment(Pos.CENTER);
-        popupRoot.setSpacing(10);
+        popupRoot.setSpacing(15);
 
         // Add title label
         Label titleLabel = new Label("Create Scenario");
         titleLabel.setAlignment(Pos.TOP_CENTER);
+        titleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+        titleLabel.setStyle("-fx-text-fill: #700450");
         popupRoot.getChildren().add(titleLabel);
 
         // Add text input fields
@@ -203,6 +239,7 @@ public class MainMenu {
 
         // Add "Create" button
         Button createScenarioButton = new Button("Create");
+        createScenarioButton.setStyle("-fx-background-color: #700450; -fx-text-fill: #FFFFFF; -fx-font-size: 14");
         createScenarioButton.setOnAction(loadEvent -> {
             String scenarioId = idField.getText();
             Integer difficulty = difficultyComboBox.getValue();
@@ -222,6 +259,13 @@ public class MainMenu {
                 alert.setHeaderText("Invalid Value");
                 alert.setContentText("All values should be integers.");
                 alert.showAndWait();
+            } catch (NullPointerException e) {
+                // Show an error message to the user
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Empty Field");
+                alert.setContentText("Please choose a value for all the fields.");
+                alert.showAndWait();
             }
             popupStage.close();
         });
@@ -232,4 +276,75 @@ public class MainMenu {
         popupStage.setScene(popupScene);
         popupStage.showAndWait();
     }
+
+    public void roundsPopUp(Stage stage) {
+        Stage popupStage = new Stage();
+        popupStage.initOwner(stage);
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.setTitle("Rounds");
+
+        TableView<ObservableList<String>> table = new TableView<>();
+        ObservableList<ObservableList<String>> data = FXCollections.observableArrayList();
+
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("medialab/rounds.txt"));
+            String line;
+            int round = 1;
+            while ((line = reader.readLine()) != null) {
+                String[] fields = line.split(",");
+                ObservableList<String> row = FXCollections.observableArrayList();
+                row.addAll(String.valueOf(round), fields[0], fields[1], fields[2],
+                        (Objects.equals(fields[3], "true") ? "User" : "PC"));
+                data.add(row);
+                round++;
+            }
+        } catch (FileNotFoundException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("File not found");
+            alert.setContentText("You have played no games so far.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Create the columns using the createColumn() method
+        TableColumn<ObservableList<String>, String> roundColumn = createColumn("Round", 0);
+        TableColumn<ObservableList<String>, String> bombsColumn = createColumn("Number of Mines", 1);
+        TableColumn<ObservableList<String>, String> triesColumn = createColumn("Number of Tries", 2);
+        TableColumn<ObservableList<String>, String> timeColumn = createColumn("Game Time", 3);
+        TableColumn<ObservableList<String>, String> winnerColumn = createColumn("Winner", 4);
+
+        table.setItems(data);
+        table.getColumns().addAll(roundColumn, bombsColumn, triesColumn, timeColumn, winnerColumn);
+
+        // Create a VBox to hold the table
+        VBox vbox = new VBox();
+        vbox.getChildren().addAll(table);
+        vbox.setPrefWidth(450);
+        vbox.setPrefHeight(200);
+
+        // Create a new scene and set the stage
+        Scene scene = new Scene(vbox, 450, 200);
+        popupStage.setScene(scene);
+        popupStage.showAndWait();
+    }
+    private TableColumn<ObservableList<String>, String> createColumn(String columnName, int columnIndex) {
+        TableColumn<ObservableList<String>, String> column = new TableColumn<>(columnName);
+        column.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().get(columnIndex)));
+        column.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                    setAlignment(Pos.CENTER);
+                }
+            }
+        });
+        return column;
+    }
+
 }

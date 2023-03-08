@@ -2,9 +2,6 @@ package com.example.minesweeperntua;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -14,16 +11,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Objects;
 
 public class GameUI extends BorderPane {
     private final MainGame mainGame;
@@ -87,9 +78,7 @@ public class GameUI extends BorderPane {
         applicationMenu.getItems().add(startItem);
 
         MenuItem exitItem = new MenuItem("Exit");
-        exitItem.setOnAction(event -> {
-            stage.close();
-        });
+        exitItem.setOnAction(event -> stage.close());
         applicationMenu.getItems().add(exitItem);
 
         // Details menu
@@ -97,7 +86,8 @@ public class GameUI extends BorderPane {
 
         MenuItem roundsItem = new MenuItem("Rounds");
         roundsItem.setOnAction(event -> {
-            roundsPopUp();
+            MainMenu mainMenu = new MainMenu(mainGame.getMinesweeperApp());
+            mainMenu.roundsPopUp(stage);
         });
         detailsMenu.getItems().add(roundsItem);
 
@@ -160,9 +150,12 @@ public class GameUI extends BorderPane {
         bombsLabel = new Label("Mines: " + mainGame.getMinesweeperApp().getBombs());
         flagsLabel = new Label("Flags Used: " + mainGame.getUsedFlags() + "/" + mainGame.getMinesweeperApp().getBombs());
         timeLabel = new Label("Time Left: " + mainGame.getMinesweeperApp().getTime());
+        bombsLabel.setStyle("-fx-font-size: 15; -fx-font-weight: bold");
+        flagsLabel.setStyle("-fx-font-size: 15; -fx-font-weight: bold");
+        timeLabel.setStyle("-fx-font-size: 15; -fx-font-weight: bold");
         HBox hBox = new HBox(bombsLabel, flagsLabel, timeLabel);
         hBox.setAlignment(Pos.CENTER);
-        hBox.setSpacing(20);
+        hBox.setSpacing(30);
         hBox.setPadding(new Insets(10));
         return hBox;
     }
@@ -171,14 +164,15 @@ public class GameUI extends BorderPane {
         GridPane gridPane = new GridPane();
         gridPane.setMinSize(400, 400);
         gridPane.setPadding(new Insets(10));
-        gridPane.setHgap(10);
-        gridPane.setVgap(10);
+        gridPane.setHgap(5);
+        gridPane.setVgap(5);
         Tile[][] tiles = mainGame.getTiles();
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles[i].length; j++) {
                 Tile tile = tiles[i][j];
                 Button button = new Button();
                 button.setPrefSize(40, 40);
+                button.setStyle("-fx-background-color: #700450; -fx-text-fill: #FFFFFF");
                 button.setOnMouseClicked(event -> {
                     if (event.getButton() == MouseButton.PRIMARY) {
                         mainGame.open(tile);
@@ -208,7 +202,7 @@ public class GameUI extends BorderPane {
                 if (tile.isOpen()) {
                     button.setDisable(true);
                     if (tile.isBomb()) {
-                        button.setText("X");
+                        button.setText("💣");
                     } else {
                         int adjacentBombs = mainGame.getBombNeighbors(mainGame.getNeighbors(tile
                                 , mainGame.getMinesweeperApp().getDifficulty()));
@@ -224,75 +218,4 @@ public class GameUI extends BorderPane {
             }
         }
     }
-
-    private void roundsPopUp() {
-        Stage popupStage = new Stage();
-        popupStage.initOwner(stage);
-        popupStage.initModality(Modality.APPLICATION_MODAL);
-
-        TableView<ObservableList<String>> table = new TableView<>();
-        ObservableList<ObservableList<String>> data = FXCollections.observableArrayList();
-
-
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader("medialab/rounds.txt"));
-            String line;
-            int round = 1;
-            while ((line = reader.readLine()) != null) {
-                String[] fields = line.split(",");
-                ObservableList<String> row = FXCollections.observableArrayList();
-                row.addAll(String.valueOf(round), fields[0], fields[1], fields[2],
-                        (Objects.equals(fields[3], "true") ? "User" : "PC"));
-                data.add(row);
-                round++;
-            }
-        } catch (FileNotFoundException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("File not found");
-            alert.setContentText("You have played no games so far.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // Create the columns using the createColumn() method
-        TableColumn<ObservableList<String>, String> roundColumn = createColumn("Round", 0);
-        TableColumn<ObservableList<String>, String> bombsColumn = createColumn("Number of Mines", 1);
-        TableColumn<ObservableList<String>, String> triesColumn = createColumn("Number of Tries", 2);
-        TableColumn<ObservableList<String>, String> timeColumn = createColumn("Game Time", 3);
-        TableColumn<ObservableList<String>, String> winnerColumn = createColumn("Winner", 4);
-
-        table.setItems(data);
-        table.getColumns().addAll(roundColumn, bombsColumn, triesColumn, timeColumn, winnerColumn);
-
-        // Create a VBox to hold the table
-        VBox vbox = new VBox();
-        vbox.getChildren().addAll(table);
-        vbox.setPrefWidth(450);
-        vbox.setPrefHeight(200);
-
-        // Create a new scene and set the stage
-        Scene scene = new Scene(vbox, 450, 200);
-        popupStage.setScene(scene);
-        popupStage.showAndWait();
-    }
-
-    private TableColumn<ObservableList<String>, String> createColumn(String columnName, int columnIndex) {
-        TableColumn<ObservableList<String>, String> column = new TableColumn<>(columnName);
-        column.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().get(columnIndex)));
-        column.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(item);
-                    setAlignment(Pos.CENTER);
-                }
-            }
-        });
-        return column;
-    }
-
 }
