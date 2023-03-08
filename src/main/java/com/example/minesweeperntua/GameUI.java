@@ -2,7 +2,6 @@ package com.example.minesweeperntua;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,7 +9,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -19,13 +17,12 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.io.*;
-import java.nio.file.FileAlreadyExistsException;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 public class GameUI extends BorderPane {
@@ -160,7 +157,7 @@ public class GameUI extends BorderPane {
 
 
     private HBox createTopPane() {
-        bombsLabel = new Label("Bombs: " + mainGame.getMinesweeperApp().getBombs());
+        bombsLabel = new Label("Mines: " + mainGame.getMinesweeperApp().getBombs());
         flagsLabel = new Label("Flags Used: " + mainGame.getUsedFlags() + "/" + mainGame.getMinesweeperApp().getBombs());
         timeLabel = new Label("Time Left: " + mainGame.getMinesweeperApp().getTime());
         HBox hBox = new HBox(bombsLabel, flagsLabel, timeLabel);
@@ -200,7 +197,7 @@ public class GameUI extends BorderPane {
     }
 
     private void updateUI() {
-        bombsLabel.setText("Bombs: " + mainGame.getMinesweeperApp().getBombs());
+        bombsLabel.setText("Mines: " + mainGame.getMinesweeperApp().getBombs());
         flagsLabel.setText("Flags Used: " + mainGame.getUsedFlags() + "/" + mainGame.getMinesweeperApp().getBombs());
         Tile[][] tiles = mainGame.getTiles();
         for (int i = 0; i < tiles.length; i++) {

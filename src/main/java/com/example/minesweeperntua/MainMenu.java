@@ -1,5 +1,7 @@
 package com.example.minesweeperntua;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -9,6 +11,8 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -81,23 +85,47 @@ public class MainMenu {
         popupRoot.setAlignment(Pos.CENTER);
         popupRoot.setSpacing(10);
 
-        // Add text input field
-        TextField idField = new TextField();
-        idField.setPromptText("Enter scenario ID");
-        popupRoot.getChildren().add(idField);
+        // Add title label
+        Label titleLabel = new Label("Load Scenario");
+        titleLabel.setAlignment(Pos.TOP_CENTER);
+        popupRoot.getChildren().add(titleLabel);
+
+        // Get list of scenario IDs from files in "medialab" directory
+        List<Integer> scenarioIds = new ArrayList<>();
+        File medialabDir = new File("medialab");
+        File[] files = medialabDir.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                String fileName = file.getName();
+                if (fileName.startsWith("SCENARIO-") && fileName.endsWith(".txt")) {
+                    try {
+                        int id = Integer.parseInt(fileName.substring(9, fileName.length() - 4));
+                        scenarioIds.add(id);
+                    } catch (NumberFormatException e) {
+                        // Ignore files with invalid scenario IDs
+                    }
+                }
+            }
+        }
+
+        // Add dropdown list of scenario IDs
+        ObservableList<Integer> options = FXCollections.observableArrayList(scenarioIds);
+        ComboBox<Integer> idDropdown = new ComboBox<>(options);
+        idDropdown.setPromptText("Select scenario ID");
+        popupRoot.getChildren().add(idDropdown);
 
         // Add "Load" button
         Button loadScenarioButton = new Button("Load");
         loadScenarioButton.setOnAction(loadEvent -> {
-            String scenarioId = idField.getText();
-            try {
-                minesweeperApp.loadScenario(Integer.parseInt(scenarioId));
-            } catch (NumberFormatException e) {
+            Integer scenarioId = idDropdown.getValue();
+            if (scenarioId != null) {
+                minesweeperApp.loadScenario(scenarioId);
+            } else {
                 // Show an error message to the user
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
-                alert.setHeaderText("Scenario not found");
-                alert.setContentText("The scenario ID should be an integer.");
+                alert.setHeaderText("Scenario not selected");
+                alert.setContentText("Please select a scenario to load.");
                 alert.showAndWait();
             }
             popupStage.close();
@@ -118,6 +146,11 @@ public class MainMenu {
         VBox popupRoot = new VBox();
         popupRoot.setAlignment(Pos.CENTER);
         popupRoot.setSpacing(10);
+
+        // Add title label
+        Label titleLabel = new Label("Create Scenario");
+        titleLabel.setAlignment(Pos.TOP_CENTER);
+        popupRoot.getChildren().add(titleLabel);
 
         // Add text input fields
         TextField idField = new TextField();
