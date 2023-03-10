@@ -163,6 +163,7 @@ public class GameUI extends BorderPane {
     private GridPane createGameGrid() {
         GridPane gridPane = new GridPane();
         gridPane.setMinSize(400, 400);
+        gridPane.setAlignment(Pos.CENTER);
         gridPane.setPadding(new Insets(10));
         gridPane.setHgap(5);
         gridPane.setVgap(5);

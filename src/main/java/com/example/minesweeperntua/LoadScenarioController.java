@@ -131,7 +131,22 @@ public class LoadScenarioController {
             alert.setHeaderText("Scenario not found");
             alert.setContentText("The scenario with ID " + scenarioID + " was not found.");
             alert.showAndWait();
-        } catch (InvalidValueException | InvalidDescriptionException | IOException e) {
+        } catch (InvalidDescriptionException e) {
+            // Show an error message to the user
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Invalid Description Exception");
+            alert.setContentText("The scenario with ID " + scenarioID + " doesn't have the expected number of lines.");
+            alert.showAndWait();
+        } catch (InvalidValueException e) {
+            // Show an error message to the user
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Invalid Value Exception");
+            alert.setContentText("The scenario with ID " + scenarioID + " has invalid values.");
+            alert.showAndWait();
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
     }
